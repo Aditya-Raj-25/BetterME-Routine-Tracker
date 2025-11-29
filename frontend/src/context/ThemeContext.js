@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useColorScheme, View } from 'react-native'; // View unused
+import { View } from 'react-native'; 
 import { lightTheme, darkTheme } from '../utils/theme';
 
 const ThemeContext = createContext();
