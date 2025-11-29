@@ -115,7 +115,7 @@ const AppNavigator = () => {
                     <Stack.Group>
                         <Stack.Screen name="Main" component={BottomTabs} />
 
-                        {/* Modals */}
+
                         <Stack.Screen
                             name="AddHabit"
                             component={AddHabitScreen}

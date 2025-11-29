@@ -19,8 +19,7 @@ export const ThemeProvider = ({ children }) => {
         // console.log('Theme switched to', mode === 'light' ? 'dark' : 'light');
     };
 
-    const theme = mode === 'dark' ? darkTheme : lightTheme;
-
+    const theme = mode === 'dark' ? darkTheme : lightTheme
     return (
         <ThemeContext.Provider value={{ theme, isDark: mode === 'dark', toggleTheme: switchTheme }}>
             {children}
