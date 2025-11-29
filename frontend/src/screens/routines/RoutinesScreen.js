@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import client from '../../api/client';
 import Button from '../../components/Button';
 
+// TODO: Move this to a separate component file if it gets too big
 const RoutineItem = ({ item, theme, onDelete }) => {
     return (
         <View style={[styles.routineCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -14,12 +15,13 @@ const RoutineItem = ({ item, theme, onDelete }) => {
                 </Text>
                 <TouchableOpacity
                     onPress={() => onDelete(item._id)}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} 
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // bigger touch area
                 >
                     <Text style={{ color: theme.error, fontSize: 14 }}>Remove</Text>
                 </TouchableOpacity>
             </View>
 
+            {/* List habits inline */}
             <View style={styles.habitsContainer}>
                 {item.habits && item.habits.length > 0 ? (
                     item.habits.map((habit, index) => (
@@ -40,35 +42,43 @@ const RoutineItem = ({ item, theme, onDelete }) => {
 const RoutinesScreen = ({ navigation }) => {
     const { theme } = useTheme();
 
+    // State
     const [routinesList, setRoutinesList] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [errMessage, setErrMessage] = useState(null);
 
+    // Fetch data from backend
     const fetchRoutines = async () => {
+        // console.log('Fetching routines...');
         setIsRefreshing(true);
         setErrMessage(null);
 
         try {
             const response = await client.get('/routines');
+            // console.log('Got routines:', response.data.length);
             setRoutinesList(response.data);
         } catch (error) {
             console.error("API Error:", error);
             setErrMessage("Couldn't load routines. Try again?");
         } finally {
+            // fake delay to show spinner? nah
             setIsRefreshing(false);
         }
     };
 
+    // Reload when screen comes into focus
     useFocusEffect(
         useCallback(() => {
             fetchRoutines();
 
             return () => {
+                // cleanup if needed
             };
         }, [])
     );
 
     const handleRemoveRoutine = (routineId) => {
+        // Confirmation dialog
         Alert.alert(
             "Delete Routine",
             "This action cannot be undone. Are you sure?",
@@ -80,6 +90,8 @@ const RoutinesScreen = ({ navigation }) => {
                     onPress: async () => {
                         try {
                             await client.delete(`/routines/${routineId}`);
+                            // Optimistic update? Or just refetch?
+                            // Let's just refetch for now to be safe
                             fetchRoutines();
                         } catch (e) {
                             Alert.alert("Error", "Failed to delete routine.");
@@ -92,6 +104,7 @@ const RoutinesScreen = ({ navigation }) => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
+            {/* Header */}
             <View style={styles.topBar}>
                 <Text style={[styles.screenTitle, { color: theme.text }]}>My Routines</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('AddRoutine')}>
@@ -101,12 +114,14 @@ const RoutinesScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
+            {/* Error Banner */}
             {errMessage && (
                 <View style={{ padding: 10, backgroundColor: '#ffebee' }}>
                     <Text style={{ color: '#c62828', textAlign: 'center' }}>{errMessage}</Text>
                 </View>
             )}
 
+            {/* List */}
             <FlatList
                 data={routinesList}
                 keyExtractor={(item) => item._id}
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 20, 
+        paddingTop: 20, // maybe use SafeAreaView instead?
         paddingBottom: 10,
     },
     screenTitle: {
@@ -162,17 +177,19 @@ const styles = StyleSheet.create({
     },
     listContent: {
         padding: 16,
-        paddingBottom: 100, 
+        paddingBottom: 100, // extra space for bottom tab
     },
     routineCard: {
         padding: 16,
         borderRadius: 12,
         borderWidth: 1,
         marginBottom: 12,
+        // shadow for ios
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
+        // elevation for android
         elevation: 2,
     },
     headerRow: {

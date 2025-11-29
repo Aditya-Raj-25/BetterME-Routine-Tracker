@@ -16,6 +16,7 @@ const AddRoutineScreen = ({ navigation }) => {
     const [err, setErr] = useState('');
 
     useEffect(() => {
+        // load habits on mount
         const load = async () => {
             try {
                 const res = await client.get('/habits');
